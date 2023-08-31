@@ -5,4 +5,8 @@ set(CMAKE_CXX_STANDARD 23)
 
 find_package(OpenGL REQUIRED)
 
-add_executable(Tiles main.cpp)
+add_executable(Tiles src/main.cpp libs/glad/src/glad.c)
+
+target_include_directories(Tiles PRIVATE ${OPENGL_INCLUDE_DIR} libs/glad/include libs/glfw/include src)
+target_link_directories(Tiles PRIVATE libs/glfw)
+target_link_libraries(Tiles PRIVATE glfw.3 ${OPENGL_LIBRARIES})
