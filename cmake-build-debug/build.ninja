@@ -49,16 +49,30 @@ build cmake_object_order_depends_target_Tiles: phony || CMakeFiles/Tiles.dir
 build CMakeFiles/Tiles.dir/src/main.cpp.o: CXX_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/src/main.cpp || cmake_object_order_depends_target_Tiles
   DEP_FILE = CMakeFiles/Tiles.dir/src/main.cpp.o.d
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -std=gnu++2b
-  INCLUDES = -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/src
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm
   OBJECT_DIR = CMakeFiles/Tiles.dir
   OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
 
 build CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o: C_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/libs/glad/src/glad.c || cmake_object_order_depends_target_Tiles
   DEP_FILE = CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o.d
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
-  INCLUDES = -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/src
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm
   OBJECT_DIR = CMakeFiles/Tiles.dir
   OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/libs/glad/src
+
+build CMakeFiles/Tiles.dir/src/shader.cpp.o: CXX_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/src/shader.cpp || cmake_object_order_depends_target_Tiles
+  DEP_FILE = CMakeFiles/Tiles.dir/src/shader.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -std=gnu++2b
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm
+  OBJECT_DIR = CMakeFiles/Tiles.dir
+  OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
+
+build CMakeFiles/Tiles.dir/src/window.cpp.o: CXX_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/src/window.cpp || cmake_object_order_depends_target_Tiles
+  DEP_FILE = CMakeFiles/Tiles.dir/src/window.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -std=gnu++2b
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm
+  OBJECT_DIR = CMakeFiles/Tiles.dir
+  OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
 
 
 # =============================================================================
@@ -68,7 +82,7 @@ build CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o: C_COMPILER__Tiles_Debug /User
 #############################################
 # Link the executable Tiles
 
-build Tiles: CXX_EXECUTABLE_LINKER__Tiles_Debug CMakeFiles/Tiles.dir/src/main.cpp.o CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o
+build Tiles: CXX_EXECUTABLE_LINKER__Tiles_Debug CMakeFiles/Tiles.dir/src/main.cpp.o CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o CMakeFiles/Tiles.dir/src/shader.cpp.o CMakeFiles/Tiles.dir/src/window.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LINK_LIBRARIES = -Wl,-rpath,/Users/michal/Desktop/Tiles/libs/glfw  -lglfw.3  -framework  OpenGL  -framework  OpenGL
   LINK_PATH = -L/Users/michal/Desktop/Tiles/libs/glfw

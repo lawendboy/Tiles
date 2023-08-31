@@ -1,5 +1,6 @@
 # ninja log v5
 0	691	1693495499943564112	CMakeFiles/Tiles.dir/main.cpp.o	61cce911b04dd22
-532	592	1693497177164653588	Tiles	c3a92b5f392143dd
-3	133	1693497176705359273	CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o	118ac51cb53e017a
-1	531	1693497177099911157	CMakeFiles/Tiles.dir/src/main.cpp.o	ba7578c33eeffccc
+650	697	1693517050128471720	Tiles	23e3c8b900b83867
+11	38330	1693506975711909722	CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o	16dbcfac07ab8ac2
+3	819	1693507099012435183	CMakeFiles/Tiles.dir/src/main.cpp.o	165e9f27a37d8cc6
+10	650	1693517050076612974	CMakeFiles/Tiles.dir/src/shader.cpp.o	a49e8eff36b7bc85
