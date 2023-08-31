@@ -1,0 +1,5 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/michal/Desktop/Tiles -B /Users/michal/Desktop/Tiles/cmake-build-debug
+-- Found OpenGL: /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks/OpenGL.framework   
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/michal/Desktop/Tiles/cmake-build-debug

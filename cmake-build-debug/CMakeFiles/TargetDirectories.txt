@@ -1,0 +1,3 @@
+/Users/michal/Desktop/Tiles/cmake-build-debug/CMakeFiles/Tiles.dir
+/Users/michal/Desktop/Tiles/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/michal/Desktop/Tiles/cmake-build-debug/CMakeFiles/rebuild_cache.dir
