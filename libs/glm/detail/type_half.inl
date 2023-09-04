@@ -3,8 +3,8 @@ namespace detail
 {
 	GLM_FUNC_QUALIFIER float overflow()
 	{
-		volatile float f = 1e10;
-
+        float f = 1e10;
+    // tutaj usunąłem, jak cos nie działa to dodać "volatile" do float'a
 		for(int i = 0; i < 10; ++i)
 			f *= f; // this will overflow before the for loop terminates
 		return f;

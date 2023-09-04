@@ -7,6 +7,8 @@
 #include "iostream"
 #include "fstream"
 #include "sstream"
+#include "glm.hpp"
+#include "gtc/type_ptr.hpp"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath) {
     std::string vertexCode;
@@ -23,7 +25,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geo
 
     try{
         vShaderFile.open(vertexPath);
-        fShaderFile.open(vertexPath);
+        fShaderFile.open(fragmentPath);
 
         std::stringstream vShaderStream, fShaderStream;
         vShaderStream << vShaderFile.rdbuf();
@@ -49,6 +51,7 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath, const char* geo
     }catch(std::ifstream::failure& e){
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: " << e.what() << std::endl;
     }
+
 
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
@@ -95,15 +98,37 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
     GLchar infoLog[1024];
     if(type != "PROGRAM"){
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-        if(success){
-            glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            std::cout << "ERROR::SHADER_COMPILATION_ERROR from " << type << "\n" << infoLog << std::endl;
+        if(!success){
+            glGetShaderInfoLog(shader, 1024, nullptr, infoLog);
+            std::cerr << "ERROR::SHADER_COMPILATION_ERROR from " << type << "\n" << infoLog << std::endl;
         }
     }else{
-        glGetShaderiv(shader, GL_LINK_STATUS, &success);
-        if(success){
-            glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            std::cout << "ERROR::SHADER_COMPILATION_ERROR from " << type << "\n" << infoLog << std::endl;
+        glGetProgramiv(shader, GL_LINK_STATUS, &success);
+        if(!success){
+            glGetProgramInfoLog(shader, 1024, nullptr, infoLog);
+            std::cerr << "ERROR::SHADER_COMPILATION_ERROR from " << type << "\n" << infoLog << std::endl;
         }
     }
+}
+
+void Shader::Use() {
+    glUseProgram(Shader::id);
+}
+
+void Shader::AddUniform(std::string uniformName) {
+    int uniformLocation = glGetUniformLocation(Shader::id, uniformName.c_str());
+
+    if(uniformLocation == -1){
+        std::cerr << "ERROR::SHADER_UNIFORM did not found uniform: " << uniformName << std::endl;
+    }
+
+    Shader::uniforms[uniformName] = uniformLocation;
+}
+
+void Shader::SetUniform(std::string uniformName, glm::mat4 value) {
+    glUniformMatrix4fv(Shader::uniforms[uniformName], 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::SetUniform(std::string uniformName, int value) {
+    glUniform1i(Shader::uniforms[uniformName], value);
 }
