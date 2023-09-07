@@ -8,10 +8,112 @@
 
 #include "shader.hpp"
 #include "texture.hpp";
+#include "chunk.hpp"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 960
+#define WINDOW_HEIGHT 800
 #define WINDOW_TITLE "Tile engine"
+
+FastNoise myNoise;
+
+const int genWidth = 32;  // Width of the noise map
+const int genHeight = 32; // Height of the noise map
+
+Chunk* chunks[36];
+
+int noiseVector[1024];
+
+double interpolate(double a, double b, double t) {
+    // Linear interpolation
+    return a * (1 - t) + b * t;
+}
+
+int mapWidth = 32;
+int mapHeight = 32;
+
+// Generate biome map with seamless transitions
+void generateBiomeMap(int offsetX, int offsetY) {
+    int counter = 0;
+    for (int x = 0; x < mapWidth; x++) {
+        for (int y = 0; y < mapHeight; y++) {
+            // Generate noise values for each corner of a grid cell
+            double tl = myNoise.GetNoise(x - offsetX * 32, y - offsetY * 32);
+            double tr = myNoise.GetNoise(x - offsetX * 32 + 1, y - offsetY * 32);
+            double bl = myNoise.GetNoise(x - offsetX * 32, y + 1 - offsetY * 32);
+            double br = myNoise.GetNoise(x - offsetX * 32 + 1, y + 1 - offsetY * 32);
+
+            // Calculate the fractional part of the cell coordinates
+            double fracX = x - floor(x);
+            std::cout << fracX << std::endl;
+            double fracY = y - floor(y);
+
+            // Interpolate between the noise values for smoother transitions
+            double top = interpolate(tl, tr, fracX);
+            double bottom = interpolate(bl, br, fracX);
+            double value = interpolate(top, bottom, fracY);
+
+            noiseVector[counter++] = roundf(value * 10);
+//            // Assign biomes based on the interpolated noise value
+//            if (value < 0.2) {
+//                noiseVector[counter++] = 0;
+//            } else if (value < 0.4) {
+//                noiseVector[counter++] = 13;
+//            } else if (value < 0.6) {
+//                noiseVector[counter++] = 6;
+//            } else if (value < 0.8) {
+//                noiseVector[counter++] = 2;
+//            } else {
+//            }
+        }
+    }
+}
+
+void GenerateChunk(int offsetX, int offsetY){
+    for (int y = 0; y < genHeight; ++y) {
+        for (int x = 0; x < genWidth; ++x) {
+            double tl = myNoise.GetNoise(x + offsetX * 32, y + offsetY * 32);
+            double tr = myNoise.GetNoise(x + 1 + offsetX * 32, y + offsetY * 32);
+
+            double bl = myNoise.GetNoise(x + offsetX * 32, y + 1 + offsetY * 32);
+            double br = myNoise.GetNoise(x + 1 + offsetX * 32, y + 1 + offsetY * 32);
+
+            double top = interpolate(tl, tr, tl * 10 - floor(tl * 10));
+            double bottom = interpolate(bl, br, bl * 10 - floor(bl * 10));
+            double value = interpolate(top,bottom, top * 10 - floor(top * 10));
+//            std::cout << tl << ' ' << tr << ' ' << bl << ' ' << br << ' ' << top << ' ' << bottom << ' ' << value;
+//            double value = myNoise.GetNoise(x + offsetX * 32, y + offsetY * 32);
+
+            if (value < 0.05) {
+                noiseVector[y * genHeight + x] = 15;
+            } else if (value < 0.1) {
+                noiseVector[y * genHeight + x] = 11;
+            }else if (value < 0.2) {
+                noiseVector[y * genHeight + x] = 13;
+            }else if (value < 0.3) {
+                noiseVector[y * genHeight + x] = 6;
+            } else if (value < 0.4) {
+                noiseVector[y * genHeight + x] = 2;
+            }else if (value < 0.5) {
+                noiseVector[y * genHeight + x] = 4;
+            }else if (value < 0.6) {
+                noiseVector[y * genHeight + x] = 9;
+            }else if (value < 0.7) {
+                noiseVector[y * genHeight + x] = 10;
+            }else if (value < 0.8) {
+                noiseVector[y * genHeight + x] = 0;
+            }else if (value < 0.9) {
+                noiseVector[y * genHeight + x] = 15;
+            }
+
+//            noiseVector[y * genHeight + x] = round((value) * 10 + 25);
+        }
+    }
+}
+
+int playerPositionX = 0;
+int playerPositionY = 0;
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 int main() {
 
@@ -42,6 +144,10 @@ int main() {
 
     glfwMakeContextCurrent(window);
 
+    glfwSetKeyCallback(window, key_callback);
+
+
+
     /*
      * Ładowanie glad
      */
@@ -55,83 +161,28 @@ int main() {
 
     mainShader.Use();
 
-    Texture atlas("atlas.png");
+    Texture atlas("atlas2.png");
 
 
-    FastNoise myNoise;
-    myNoise.SetSeed(48329892);          // Set a random seed
-    myNoise.SetFrequency(0.05f);   // Adjust the frequency of the noise
-    myNoise.SetInterp(FastNoise::Hermite); // Use Hermite interpolation for smoother noise
+    myNoise.SetSeed(1);
+    myNoise.SetFrequency(0.01f);
+//    myNoise.SetInterp(FastNoise::Hermite);
+    myNoise.SetNoiseType(FastNoise::Perlin);
 
-    const int width = 32;  // Width of the noise map
-    const int height = 32; // Height of the noise map
 
-    // Generate Perlin noise and print it
-    int noiseVector[1024];
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            noiseVector[y * height + x] = roundf(myNoise.GetNoise(x, y) * 10 + 10);
+    int counterChunks = 0;
+    for(int i = 0 ; i < 6; i++){
+        for(int j = 0; j < 6; j++){
+            GenerateChunk(j, i);
+//            generateBiomeMap(j, i);
+            chunks[counterChunks++] = new Chunk(noiseVector);
         }
     }
 
-//    for(int i = 0; i < 32; i++){
-//        for(int j = 0; j < 32; j++){
-//            std::cout << noiseVector[i * 32 + j] << ' ';
-//        }
-//        std::cout << std::endl;
-//    }
-
-    int instances[] = {
-            1,0, 10, 10, 10, 10, 10, 9,
-            8, 8, 8, 8, 8, 9, 8, 8,
-            6, 6, 6, 7, 7, 7, 8, 8,
-            5, 5, 5, 5, 6, 6, 7, 7,
-            4, 4, 4, 5, 5, 6, 6, 7,
-            3, 3, 4, 4, 5, 5, 6, 6,
-            3, 3, 4, 4, 4, 5, 5, 6,
-            3, 3, 4, 4, 4, 4, 5, 5,
-
-    };
-
-    float vertices[] = {
-            -0.125f, -0.125f,  0.0f, 1.0f,
-            0.125f, -0.125f,  1.0f, 1.0f,
-            0.125f,  0.125f,  1.0f, 0.0f,
-            -0.125f,  0.125f,  0.0f, 0.0f
-    };
-
-    unsigned int vao, vbo;
-
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-
-    glBindVertexArray(vao);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof (vertices), vertices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof (float), nullptr);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof (float), (void*)(2 * sizeof (float)));
-    glEnableVertexAttribArray(1);
-
-    unsigned int instanceVBO;
-    glGenBuffers(1, &instanceVBO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof (instances), instances, GL_STATIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(noiseVector), noiseVector, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, sizeof (int), nullptr);
-    glEnableVertexAttribArray(2);
-
-    glVertexAttribDivisor(2, 1);
-
-
     glm::vec3 projectionVec = glm::vec3 (1.0f, (float)WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.0f);
     glm::mat4 projectionMatrix = glm::scale(glm::mat4(1.0f), projectionVec);
-    projectionMatrix = glm::scale(projectionMatrix, glm::vec3(0.1f));
+    projectionMatrix = glm::scale(projectionMatrix, glm::vec3(0.1));
+    projectionMatrix = glm::translate(projectionMatrix, glm::vec3(-9.5, 9,0));
 
 
     glEnable(GL_BLEND);
@@ -144,22 +195,81 @@ int main() {
     mainShader.AddUniform("viewMatrix");
     mainShader.SetUniform("viewMatrix", projectionMatrix);
 
+    mainShader.AddUniform("positionVector");
+
+
     glActiveTexture(GL_TEXTURE0);
     atlas.Bind();
 
     glClearColor(0.4431372549f, 0.6705882353f, 0.6392156863f, 1.0f);
 
+    glm::vec2 positionMatrix(1.0f);
+
+
     while(!glfwWindowShouldClose(window)){
-        if(glfwGetKey(window, GLFW_KEY_ESCAPE))
-            glfwSetWindowShouldClose(window, true);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//        glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, sizeof(instances) / sizeof (int));
-        glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, 4, sizeof(noiseVector) / sizeof (int));
+        int counter = 0;
+
+        for(int i = 0; i < 6; i++){
+            for(int j = 0; j < 6; j++){
+                positionMatrix = glm::vec2(3.2f * j, -3.2f * i);
+                mainShader.SetUniform("positionVector", positionMatrix);
+                chunks[counter]->Draw();
+                counter++;
+            }
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     return 0;
+}
+
+void regenerateChunk(){
+    int counterChunks = 0;
+    for(int i = 0 ; i < 6; i++){
+        for(int j = 0; j < 6; j++){
+            GenerateChunk(j - playerPositionX, i - playerPositionY);
+            delete(chunks[counterChunks]);
+            chunks[counterChunks++] = new Chunk(noiseVector);
+        }
+    }
+}
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods){
+
+    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS){
+        glfwSetWindowShouldClose(window, true);
+    }
+
+    if(key == GLFW_KEY_SPACE && action == GLFW_PRESS){
+        myNoise.SetSeed(myNoise.GetSeed() + 1);
+        regenerateChunk();
+    }
+
+    if(key == GLFW_KEY_W && action == GLFW_PRESS){
+        playerPositionY++;
+        regenerateChunk();
+    }
+
+    if(key == GLFW_KEY_S && action == GLFW_PRESS){
+        playerPositionY--;
+        regenerateChunk();
+    }
+
+    if(key == GLFW_KEY_A && action == GLFW_PRESS){
+        playerPositionX++;
+        regenerateChunk();
+    }
+
+    if(key == GLFW_KEY_D && action == GLFW_PRESS){
+        playerPositionX--;
+        regenerateChunk();
+    }
+
+
+
 }

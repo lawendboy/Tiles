@@ -129,6 +129,11 @@ void Shader::SetUniform(std::string uniformName, glm::mat4 value) {
     glUniformMatrix4fv(Shader::uniforms[uniformName], 1, GL_FALSE, glm::value_ptr(value));
 }
 
+void Shader::SetUniform(std::string uniformName, glm::vec2 value) {
+    glUniform2fv(Shader::uniforms[uniformName], 1, glm::value_ptr(value));
+}
+
 void Shader::SetUniform(std::string uniformName, int value) {
     glUniform1i(Shader::uniforms[uniformName], value);
 }
+
