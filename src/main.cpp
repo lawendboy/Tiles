@@ -7,7 +7,7 @@
 #include "ext/matrix_transform.hpp"
 
 #include "shader.hpp"
-#include "texture.hpp";
+#include "texture.hpp"
 #include "chunk.hpp"
 
 #define WINDOW_WIDTH 960
@@ -18,6 +18,8 @@ FastNoise myNoise;
 
 const int genWidth = 32;  // Width of the noise map
 const int genHeight = 32; // Height of the noise map
+
+float zoom = 0.1;
 
 Chunk* chunks[36];
 
@@ -30,43 +32,6 @@ double interpolate(double a, double b, double t) {
 
 int mapWidth = 32;
 int mapHeight = 32;
-
-// Generate biome map with seamless transitions
-void generateBiomeMap(int offsetX, int offsetY) {
-    int counter = 0;
-    for (int x = 0; x < mapWidth; x++) {
-        for (int y = 0; y < mapHeight; y++) {
-            // Generate noise values for each corner of a grid cell
-            double tl = myNoise.GetNoise(x - offsetX * 32, y - offsetY * 32);
-            double tr = myNoise.GetNoise(x - offsetX * 32 + 1, y - offsetY * 32);
-            double bl = myNoise.GetNoise(x - offsetX * 32, y + 1 - offsetY * 32);
-            double br = myNoise.GetNoise(x - offsetX * 32 + 1, y + 1 - offsetY * 32);
-
-            // Calculate the fractional part of the cell coordinates
-            double fracX = x - floor(x);
-            std::cout << fracX << std::endl;
-            double fracY = y - floor(y);
-
-            // Interpolate between the noise values for smoother transitions
-            double top = interpolate(tl, tr, fracX);
-            double bottom = interpolate(bl, br, fracX);
-            double value = interpolate(top, bottom, fracY);
-
-            noiseVector[counter++] = roundf(value * 10);
-//            // Assign biomes based on the interpolated noise value
-//            if (value < 0.2) {
-//                noiseVector[counter++] = 0;
-//            } else if (value < 0.4) {
-//                noiseVector[counter++] = 13;
-//            } else if (value < 0.6) {
-//                noiseVector[counter++] = 6;
-//            } else if (value < 0.8) {
-//                noiseVector[counter++] = 2;
-//            } else {
-//            }
-        }
-    }
-}
 
 void GenerateChunk(int offsetX, int offsetY){
     for (int y = 0; y < genHeight; ++y) {
@@ -81,8 +46,6 @@ void GenerateChunk(int offsetX, int offsetY){
             double bottom = interpolate(bl, br, bl * 10 - floor(bl * 10));
             double value = interpolate(top,bottom, top * 10 - floor(top * 10));
 //            std::cout << tl << ' ' << tr << ' ' << bl << ' ' << br << ' ' << top << ' ' << bottom << ' ' << value;
-//            double value = myNoise.GetNoise(x + offsetX * 32, y + offsetY * 32);
-
             if (value < 0.05) {
                 noiseVector[y * genHeight + x] = 15;
             } else if (value < 0.1) {
@@ -104,16 +67,20 @@ void GenerateChunk(int offsetX, int offsetY){
             }else if (value < 0.9) {
                 noiseVector[y * genHeight + x] = 15;
             }
-
-//            noiseVector[y * genHeight + x] = round((value) * 10 + 25);
         }
     }
 }
 
-int playerPositionX = 0;
-int playerPositionY = 0;
+int chunkOffsetX = 0;
+int chunkOffsetY = 0;
+
+double playerPositionX = 0.0;
+double playerPositionY = 0.0;
+glm::vec2 playerPositionVector;
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+Shader* mainShader;
 
 int main() {
 
@@ -157,16 +124,16 @@ int main() {
 
     glViewport(0, 0, WINDOW_WIDTH * 2, WINDOW_HEIGHT * 2);
 
-    Shader mainShader("vertex.glsl", "fragment.glsl");
+    mainShader = new Shader("vertex.glsl", "fragment.glsl");
 
-    mainShader.Use();
+    mainShader->Use();
 
     Texture atlas("atlas2.png");
 
 
-    myNoise.SetSeed(1);
+    myNoise.SetSeed(10);
     myNoise.SetFrequency(0.01f);
-//    myNoise.SetInterp(FastNoise::Hermite);
+    myNoise.SetInterp(FastNoise::Hermite);
     myNoise.SetNoiseType(FastNoise::Perlin);
 
 
@@ -181,7 +148,7 @@ int main() {
 
     glm::vec3 projectionVec = glm::vec3 (1.0f, (float)WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.0f);
     glm::mat4 projectionMatrix = glm::scale(glm::mat4(1.0f), projectionVec);
-    projectionMatrix = glm::scale(projectionMatrix, glm::vec3(0.1));
+    projectionMatrix = glm::scale(projectionMatrix, glm::vec3(0.5));
     projectionMatrix = glm::translate(projectionMatrix, glm::vec3(-9.5, 9,0));
 
 
@@ -189,13 +156,15 @@ int main() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-    mainShader.AddUniform("textureSampler");
-    mainShader.SetUniform("textureSampler", 0);
+    mainShader->AddUniform("textureSampler");
+    mainShader->SetUniform("textureSampler", 0);
 
-    mainShader.AddUniform("viewMatrix");
-    mainShader.SetUniform("viewMatrix", projectionMatrix);
+    mainShader->AddUniform("viewMatrix");
+    mainShader->SetUniform("viewMatrix", projectionMatrix);
 
-    mainShader.AddUniform("positionVector");
+    mainShader->AddUniform("offsetVector");
+
+//    mainShader.AddUniform("playerOffset");
 
 
     glActiveTexture(GL_TEXTURE0);
@@ -205,17 +174,30 @@ int main() {
 
     glm::vec2 positionMatrix(1.0f);
 
+    double lastTime = glfwGetTime();
+    double currentTime;
+    double deltaTime;
 
+    int counter;
     while(!glfwWindowShouldClose(window)){
+
+        currentTime = glfwGetTime();
+        deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        int counter = 0;
+        playerPositionVector.x += deltaTime * playerPositionX;
+        playerPositionVector.y += deltaTime * playerPositionY;
+
+//        if(playerPositionX >= )
+
+        counter = 0;
 
         for(int i = 0; i < 6; i++){
             for(int j = 0; j < 6; j++){
-                positionMatrix = glm::vec2(3.2f * j, -3.2f * i);
-                mainShader.SetUniform("positionVector", positionMatrix);
+                positionMatrix = glm::vec2(3.2f * j, -3.2f * i) + playerPositionVector;
+                mainShader->SetUniform("offsetVector", positionMatrix);
                 chunks[counter]->Draw();
                 counter++;
             }
@@ -232,7 +214,7 @@ void regenerateChunk(){
     int counterChunks = 0;
     for(int i = 0 ; i < 6; i++){
         for(int j = 0; j < 6; j++){
-            GenerateChunk(j - playerPositionX, i - playerPositionY);
+            GenerateChunk(j - chunkOffsetX, i - chunkOffsetY);
             delete(chunks[counterChunks]);
             chunks[counterChunks++] = new Chunk(noiseVector);
         }
@@ -250,26 +232,72 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
         regenerateChunk();
     }
 
-    if(key == GLFW_KEY_W && action == GLFW_PRESS){
-        playerPositionY++;
+    if(key == GLFW_KEY_LEFT_BRACKET && action == GLFW_PRESS){
+
+        zoom -= 0.1;
+
+        glm::vec3 projectionVec = glm::vec3 (1.0f, (float)WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.0f);
+        glm::mat4 projectionMatrix = glm::scale(glm::mat4(1.0f), projectionVec);
+        projectionMatrix = glm::scale(projectionMatrix, glm::vec3(zoom));
+        projectionMatrix = glm::translate(projectionMatrix, glm::vec3(-9.5, 9,0));
+
+        mainShader->SetUniform("viewMatrix", projectionMatrix);
+    }
+
+    if(key == GLFW_KEY_RIGHT_BRACKET && action == GLFW_PRESS){
+
+        zoom += 0.1;
+
+        glm::vec3 projectionVec = glm::vec3 (1.0f, (float)WINDOW_WIDTH / (float) WINDOW_HEIGHT, 0.0f);
+        glm::mat4 projectionMatrix = glm::scale(glm::mat4(1.0f), projectionVec);
+        projectionMatrix = glm::scale(projectionMatrix, glm::vec3(zoom));
+        projectionMatrix = glm::translate(projectionMatrix, glm::vec3(-9.5, 9,0));
+
+        mainShader->SetUniform("viewMatrix", projectionMatrix);
+    }
+
+    if(key == GLFW_KEY_UP && action == GLFW_PRESS){
+        chunkOffsetY++;
         regenerateChunk();
+    }
+    if(key == GLFW_KEY_DOWN && action == GLFW_PRESS){
+        chunkOffsetY--;
+        regenerateChunk();
+    }
+    if(key == GLFW_KEY_LEFT && action == GLFW_PRESS){
+        chunkOffsetX++;
+        regenerateChunk();
+    }
+    if(key == GLFW_KEY_RIGHT && action == GLFW_PRESS){
+        chunkOffsetX--;
+        regenerateChunk();
+    }
+
+    if(key == GLFW_KEY_W && action == GLFW_PRESS){
+        playerPositionY = -1;
+    }
+    if(key == GLFW_KEY_W && action == GLFW_RELEASE){
+        playerPositionY = 0;
     }
 
     if(key == GLFW_KEY_S && action == GLFW_PRESS){
-        playerPositionY--;
-        regenerateChunk();
+        playerPositionY = 1;
+    }
+    if(key == GLFW_KEY_S && action == GLFW_RELEASE){
+        playerPositionY = 0;
     }
 
     if(key == GLFW_KEY_A && action == GLFW_PRESS){
-        playerPositionX++;
-        regenerateChunk();
+        playerPositionX = 1;
+    }
+    if(key == GLFW_KEY_A && action == GLFW_RELEASE){
+        playerPositionX = 0;
     }
 
     if(key == GLFW_KEY_D && action == GLFW_PRESS){
-        playerPositionX--;
-        regenerateChunk();
+        playerPositionX = -1;
     }
-
-
-
+    if(key == GLFW_KEY_D && action == GLFW_RELEASE){
+        playerPositionX = 0;
+    }
 }
