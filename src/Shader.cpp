@@ -2,7 +2,7 @@
 // Created by Michal Walczyk on 31/08/2023.
 //
 
-#include "shader.hpp"
+#include "Shader.hpp"
 #include "glad/glad.h"
 #include "iostream"
 #include "fstream"

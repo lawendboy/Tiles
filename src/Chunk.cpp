@@ -2,7 +2,7 @@
 // Created by Michal Walczyk on 04/09/2023.
 //
 
-#include "chunk.hpp"
+#include "Chunk.hpp"
 #include "iostream"
 #include "glad/glad.h"
 
