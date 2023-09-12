@@ -11,13 +11,8 @@ Chunk::Chunk(const int *indices) {
     for (int i = 0; i < 1024; ++i) {
         Chunk::indices[i] = indices[i];
     }
-//
-//    for(int i = 0; i < 32; ++i){
-//        for(int j = 0; j < 32; ++j){
-//            std::cout << Chunk::indices[i * 32 + j] << ' ';
-//        }
-//        std::cout << std::endl;
-//    }
+
+    delete(indices);
 
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);

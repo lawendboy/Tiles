@@ -29,6 +29,8 @@ public:
 
     void setId(unsigned int id);
 
+    ~Shader();
+
 private:
     void checkCompileErrors(GLuint shader, std::string type);
     std::map<std::string, int> uniforms;

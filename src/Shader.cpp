@@ -111,6 +111,8 @@ void Shader::checkCompileErrors(GLuint shader, std::string type) {
     }
 }
 
+Shader::~Shader() = default;
+
 void Shader::Use() {
     glUseProgram(Shader::id);
 }

@@ -10,7 +10,7 @@ void main() {
     float atlasWidth = 1.0 / 32.0;  // Assuming 4 textures horizontally
     float atlasHeight = 1.0 / 32.0; // Assuming 4 textures vertically
     float xOffset = float(TextureId % 32) * atlasWidth;
-    float yOffset = float(TextureId / 32) * atlasHeight;
+    float yOffset = float(TextureId / 32) * -atlasHeight;
 
     vec2 atlasCoords = vec2(TexCoord.x * atlasWidth + xOffset, -TexCoord.y * atlasHeight + yOffset);
 

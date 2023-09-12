@@ -10,6 +10,7 @@ class Texture {
 public:
     Texture(const char* fileName);
     void Bind();
+    ~Texture();
 private:
     unsigned int id;
     int width;

@@ -95,6 +95,34 @@ build CMakeFiles/Tiles.dir/src/TerrainGenerator.cpp.o: CXX_COMPILER__Tiles_Debug
   OBJECT_DIR = CMakeFiles/Tiles.dir
   OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
 
+build CMakeFiles/Tiles.dir/src/Player.cpp.o: CXX_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/src/Player.cpp || cmake_object_order_depends_target_Tiles
+  DEP_FILE = CMakeFiles/Tiles.dir/src/Player.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -std=gnu++2b
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm -I/Users/michal/Desktop/Tiles/libs/stb_image -I/Users/michal/Desktop/Tiles/libs/FastNoise
+  OBJECT_DIR = CMakeFiles/Tiles.dir
+  OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
+
+build CMakeFiles/Tiles.dir/src/RenderLayer.cpp.o: CXX_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/src/RenderLayer.cpp || cmake_object_order_depends_target_Tiles
+  DEP_FILE = CMakeFiles/Tiles.dir/src/RenderLayer.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -std=gnu++2b
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm -I/Users/michal/Desktop/Tiles/libs/stb_image -I/Users/michal/Desktop/Tiles/libs/FastNoise
+  OBJECT_DIR = CMakeFiles/Tiles.dir
+  OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
+
+build CMakeFiles/Tiles.dir/src/World.cpp.o: CXX_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/src/World.cpp || cmake_object_order_depends_target_Tiles
+  DEP_FILE = CMakeFiles/Tiles.dir/src/World.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -std=gnu++2b
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm -I/Users/michal/Desktop/Tiles/libs/stb_image -I/Users/michal/Desktop/Tiles/libs/FastNoise
+  OBJECT_DIR = CMakeFiles/Tiles.dir
+  OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
+
+build CMakeFiles/Tiles.dir/src/LogicalChunk.cpp.o: CXX_COMPILER__Tiles_Debug /Users/michal/Desktop/Tiles/src/LogicalChunk.cpp || cmake_object_order_depends_target_Tiles
+  DEP_FILE = CMakeFiles/Tiles.dir/src/LogicalChunk.cpp.o.d
+  FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk -std=gnu++2b
+  INCLUDES = -I/Users/michal/Desktop/Tiles/src -F/Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk/System/Library/Frameworks -I/Users/michal/Desktop/Tiles/libs/glad/include -I/Users/michal/Desktop/Tiles/libs/glfw/include -I/Users/michal/Desktop/Tiles/libs/glm -I/Users/michal/Desktop/Tiles/libs/stb_image -I/Users/michal/Desktop/Tiles/libs/FastNoise
+  OBJECT_DIR = CMakeFiles/Tiles.dir
+  OBJECT_FILE_DIR = CMakeFiles/Tiles.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Tiles
@@ -103,7 +131,7 @@ build CMakeFiles/Tiles.dir/src/TerrainGenerator.cpp.o: CXX_COMPILER__Tiles_Debug
 #############################################
 # Link the executable Tiles
 
-build Tiles: CXX_EXECUTABLE_LINKER__Tiles_Debug CMakeFiles/Tiles.dir/src/main.cpp.o CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o CMakeFiles/Tiles.dir/src/Shader.cpp.o CMakeFiles/Tiles.dir/src/Texture.cpp.o CMakeFiles/Tiles.dir/libs/FastNoise/FastNoise.cpp.o CMakeFiles/Tiles.dir/src/Chunk.cpp.o CMakeFiles/Tiles.dir/src/TerrainGenerator.cpp.o
+build Tiles: CXX_EXECUTABLE_LINKER__Tiles_Debug CMakeFiles/Tiles.dir/src/main.cpp.o CMakeFiles/Tiles.dir/libs/glad/src/glad.c.o CMakeFiles/Tiles.dir/src/Shader.cpp.o CMakeFiles/Tiles.dir/src/Texture.cpp.o CMakeFiles/Tiles.dir/libs/FastNoise/FastNoise.cpp.o CMakeFiles/Tiles.dir/src/Chunk.cpp.o CMakeFiles/Tiles.dir/src/TerrainGenerator.cpp.o CMakeFiles/Tiles.dir/src/Player.cpp.o CMakeFiles/Tiles.dir/src/RenderLayer.cpp.o CMakeFiles/Tiles.dir/src/World.cpp.o CMakeFiles/Tiles.dir/src/LogicalChunk.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.3.sdk
   LINK_LIBRARIES = -Wl,-rpath,/Users/michal/Desktop/Tiles/libs/glfw  -lglfw.3  -framework  OpenGL  -framework  OpenGL
   LINK_PATH = -L/Users/michal/Desktop/Tiles/libs/glfw

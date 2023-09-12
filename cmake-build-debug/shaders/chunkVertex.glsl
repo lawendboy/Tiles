@@ -1,6 +1,7 @@
 #version 330 core
 uniform mat4 viewMatrix;
-uniform vec2 offsetVector;
+uniform vec2 chunkVector;
+uniform vec2 playerVector;
 
 layout (location = 0) in vec2 inPosition;
 layout (location = 1) in vec2 txtCrd;
@@ -20,6 +21,6 @@ void main() {
             (gl_InstanceID % 32) * 0.1,
             (gl_InstanceID / 32) * -0.1
 
-        ) + offsetVector,
+        ) + chunkVector + playerVector,
         0.0, 1.0);
 }
