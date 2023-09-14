@@ -7,7 +7,6 @@
 #ifndef TILES_TERRAINGENERATOR_HPP
 #define TILES_TERRAINGENERATOR_HPP
 
-
 class TerrainGenerator {
 private:
     FastNoise chunksNoise;

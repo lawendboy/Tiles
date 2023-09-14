@@ -103,7 +103,7 @@ int* TerrainGenerator::getChunk(int x, int y, GenerationType generationType) {
 }
 
 int TerrainGenerator::getDecalsValue(double value){
-    std::cout << value << std::endl;
+//    std::cout << value << std::endl;
     if (value < 0) {
         return 0;
     }else

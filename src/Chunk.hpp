@@ -8,6 +8,12 @@
 
 class Chunk {
 private:
+//    float vertices[16] = {
+//        0.0f, 0.0f,  0.0f, 1.0f,
+//        0.1f, 0.0f,  1.0f, 1.0f,
+//        0.1f,  0.1f,  1.0f, 0.0f,
+//        0.0f,  0.1f,  0.0f, 0.0f
+//    };
     float vertices[16] = {
         0.0f, 0.0f,  0.0f, 1.0f,
         0.1f, 0.0f,  1.0f, 1.0f,
