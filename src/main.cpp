@@ -13,6 +13,8 @@
 #include "TerrainGenerator.hpp"
 #include "Player.hpp"
 #include "RenderLayer.hpp"
+#include "World.hpp"
+#include "LogicalChunk.hpp"
 
 #define WINDOW_WIDTH 1240
 #define WINDOW_HEIGHT 800
@@ -158,8 +160,6 @@ int main() {
     }
 
     secondLayer = new RenderLayer(chunks, terrainGenerator, TerrainGenerator::GenerationType::Decals);
-
-
 
     while(!glfwWindowShouldClose(window)){
 

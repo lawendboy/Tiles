@@ -5,10 +5,21 @@
 #include "LogicalChunk.hpp"
 
 LogicalChunk::LogicalChunk() {
-    for(int i : middleLayer)
-        std::cout << i << std::endl;
+    for(int i = 0; i < 1024; i++){
+        LogicalChunk::layerA[i] = 0;
+        LogicalChunk::layerB[i] = 0;
+        LogicalChunk::layerC[i] = 0;
+    }
+}
+LogicalChunk::LogicalChunk(TerrainGenerator::BiomeTypes biomeType) {
+    for(int i = 0; i < 1024; i++){
+        LogicalChunk::layerA[i] = 0;
+        LogicalChunk::layerB[i] = 0;
+        LogicalChunk::layerC[i] = 0;
+    }
+
+    LogicalChunk::biome = biomeType;
+
 }
 
-LogicalChunk::~LogicalChunk() {
-
-}
+LogicalChunk::~LogicalChunk() = default;

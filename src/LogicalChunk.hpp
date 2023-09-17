@@ -13,10 +13,11 @@ public:
     TerrainGenerator::BiomeTypes biome = TerrainGenerator::BiomeTypes::Plains;
 
     LogicalChunk();
+    LogicalChunk(TerrainGenerator::BiomeTypes biomeType);
 
-    int groundLayer[1024];
-    int middleLayer[1024];
-    int upperLayer[1024];
+    int layerA[1024]{};
+    int layerB[1024]{};
+    int layerC[1024]{};
 
     struct position{
         int x = 0;
